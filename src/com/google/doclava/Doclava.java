@@ -183,6 +183,8 @@ public class Doclava {
     String exactApiFile = null;
     String debugStubsFile = "";
     HashSet<String> stubPackages = null;
+    HashSet<String> stubImportPackages = null;
+    boolean stubSourceOnly = false;
     ArrayList<String> knownTagsFiles = new ArrayList<String>();
 
     root = r;
@@ -281,6 +283,14 @@ public class Doclava {
         for (String pkg : a[1].split(":")) {
           stubPackages.add(pkg);
         }
+      } else if (a[0].equals("-stubimportpackages")) {
+        stubImportPackages = new HashSet<String>();
+        for (String pkg : a[1].split(":")) {
+          stubImportPackages.add(pkg);
+          hiddenPackages.add(pkg);
+        }
+      } else if (a[0].equals("-stubsourceonly")) {
+        stubSourceOnly = true;
       } else if (a[0].equals("-sdkvalues")) {
         sdkValuePath = a[1];
       } else if (a[0].equals("-api")) {
@@ -517,7 +527,9 @@ public class Doclava {
     if (stubsDir != null || apiFile != null || proguardFile != null || removedApiFile != null
         || exactApiFile != null) {
       Stubs.writeStubsAndApi(stubsDir, apiFile, proguardFile, removedApiFile, exactApiFile,
-          stubPackages);
+          stubPackages,
+          stubImportPackages,
+          stubSourceOnly);
     }
 
     Errors.printErrors();
@@ -787,6 +799,12 @@ public class Doclava {
     }
     if (option.equals("-stubpackages")) {
       return 2;
+    }
+    if (option.equals("-stubimportpackages")) {
+      return 2;
+    }
+    if (option.equals("-stubsourceonly")) {
+      return 1;
     }
     if (option.equals("-sdkvalues")) {
       return 2;
